@@ -26,9 +26,45 @@ case_demo/
 
 | 场景 | 用例 | 入口 | 要网络 | 说明 |
 |---|---|---|---|---|
+| Grafana日志 | `grafana-jxindependentjar.yaml` | `others/url-jxindependentjar.txt` 里的 Explore 地址 | 要 | 点 Run query 重跑查询，验时间窗与 `INFO jxindependentjar` 日志正文 |
+| Grafana日志 | `grafana-jxcollect-bw.yaml` | `others/url-jxcollect-bw.txt` 同上，换 `app_name` | 要 | 同上，验 `INFO jxcollect`（**注意容器名带 `-bw`，logger 名不带**） |
 | 大肥鱼 | `bing-search-paging.yaml` | https://cn.bing.com/ | 要 | 搜索关键词并翻到第二页，验 URL 与结果文本 |
 | 百望票据 | `baiwang-bill-query.yaml` | 内网/专线地址（见 `others/`） | 要 | 登录 → 选行政区划 → 查询票据列表 |
 | 本地夹具 | `local-fixture.yaml` | `others/local_fixture.html`（`file:///`） | 不要 | 零依赖样例，装完即可跑通「录制 → 零 token 回放」 |
+
+### Grafana日志 场景的入口地址
+
+Grafana Explore 的查询条件**全在 URL 里**：`panes` 参数里带 `expr`（Loki 查询）和 `range`
+（时间窗，绝对毫秒）。所以同一份用例换 `--url` 就等于换了「查哪个应用、查哪段时间」，
+用例里的断言直接对着 URL 片段写（`url_contains: "1792573200000"`）。
+
+`1792573200000` / `1792576800000` = **2026-10-21 17:00:00 / 18:00:00（Asia/Shanghai）**。
+时间窗是**写死在地址里的绝对时间**，所以这份用例过的前提是那个小时的数据还在 Loki 的保留期内；
+要查别的时间段，改 URL 里的 `range` 再 `--relearn` 重录（地址变了，录像的 `base_url` 对不上）。
+
+现成的两条入口分别存在 `Grafana日志/others/url-jxindependentjar.txt` 与 `url-jxcollect-bw.txt`，
+跑的时候直接读文件传进去，**不要手抄**（600 字符的百分号编码，抄错一个字符就查不到数据）：
+
+```powershell
+$u = (Get-Content "Grafana日志\others\url-jxindependentjar.txt" -Raw).Trim()
+```
+
+**别手搓 `panes` 里的 JSON。** 改查询条件只做两件事——解析出 `panes` 参数、改
+`panes['tp8']['queries'][0]['expr']` 与 `panes['tp8']['range']`、再整套重新编码：
+
+```python
+import json, urllib.parse as up
+q = up.urlsplit(url).query
+panes = json.loads(dict(up.parse_qsl(q))["panes"])
+panes["tp8"]["queries"][0]["expr"] = '{cluster="yf-bw-test-2", app_name="jxindependentjar"}'
+panes["tp8"]["range"] = {"from": "1792573200000", "to": "1792576800000"}
+print(url.split("?")[0] + "?" + up.urlencode({"schemaVersion": "1",
+      "panes": json.dumps(panes, ensure_ascii=False), "orgId": "1"}))
+```
+
+手搓一段新的 JSON 会丢结构——实测得到过 `Last 1 hour` + `No data`，因为 `range` 与 datasource 没对上。
+另外 Grafana 会**改写**它读进来的 URL（空格 `%20` ↔ `+`），所以首尾完全相等的比较不成立；
+用例里只断言稳定片段（`url_contains`），回放匹配只看路径不看 query，因此这层改写不影响回放。
 
 本地夹具那份 HTML 在 `本地夹具/others/local_fixture.html`，和技能包 `kernel/examples/local_fixture.html` 是同一份，
 放一份到这里是为了让本仓库**自己就能跑通一条完整链路**，不依赖技能包里的文件。
@@ -43,6 +79,45 @@ case_demo/
    但改 `id:` 就是换了一个用例身份 —— 录像不再匹配，必须 `--relearn` 重录。
 
 ## 怎么跑
+
+### 第一步永远是探索，不是手写 YAML
+
+面对一个没跑过的新页面，先让内核去探一遍，而不是凭想象写 `steps`：`explore` 就是**一次
+没有断言的单目标运行**，它走完把真实轨迹落下来，你照着轨迹写 `checks`。
+
+下面这段**在本库根目录执行**（`uv run --project` 指到技能包的 `kernel/`，所以不必先 `cd`）：
+
+```powershell
+$env:UI_AGENT_CACHE_DIR = "$PWD\.cache"
+$stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$u = (Get-Content "Grafana日志\others\url-jxindependentjar.txt" -Raw).Trim()
+uv run --project <技能包>\kernel ui-agent explore `
+  --run-dir "Grafana日志\outputs\_explore\$stamp" `
+  --profile-dir ".profiles\_explore" `
+  --goal-file "Grafana日志\others\goal-jxindependentjar.txt" `
+  --url $u --decider agent --supervisor off --json
+```
+
+（内核的后台运行与文件桥问答循环，实际交给技能包的 `scripts/host_loop.py --explore` 更省事，
+它会自己起进程、答问、报终态。）
+
+`--decider agent` 时内核会把自己的每一步问询写进 `<run-dir>/bridge/ask-NNNN.json`，
+你在 `ans-NNNN.json` 里答。**单个 ask 能有 300 KB**（元素多的大页面），直接整份读进模型
+上下文会把它烧光——用技能包的 `ui-agent/scripts/ask.py show` 摘着看、`answer` 答：
+
+```powershell
+python <技能包>\ui-agent\scripts\ask.py show --run-dir <那个run-dir> --grep "run query"
+python <技能包>\ui-agent\scripts\ask.py answer --run-dir <那个run-dir> --op CLICK --target 36
+python <技能包>\ui-agent\scripts\ask.py answer --run-dir <那个run-dir> --done
+```
+
+产物在 `<run-dir>/explore/`：`explored.yaml`（用例骨架，`checks: []`）、`trajectory.md`
+（按页面分组的动作轨迹与页面变化）、`explore.json`、`goal.txt`。
+
+拿到骨架后回到下面「正式用例的完整链路」的 ①，补上 `checks` 就是一份正式用例。
+用例跑挂了就改断言或改步骤，**不要靠加等待、加点击去凑**。
+
+### 正式用例的完整链路
 
 所有命令要在技能包的 `kernel/` 目录下执行（或用 `uv run --project <技能包>/kernel ui-agent ...`）。
 
@@ -90,7 +165,28 @@ $env:UI_AGENT_CACHE_DIR = "<本库>\.cache"               # PowerShell
 ```
 
 录像和本机 Chromium 版本相关，升级浏览器后可能报 `wrong-context`，那时 `--relearn` 重录。
-`.cache/` 已被 `.gitignore` 排除，要让别人零 token 复跑就得 `git add -f` 提交对应录像。
+**录像要入库**：`.gitignore` 只挡 `outputs/`、`.profiles/` 和 `*.log`，`.cache/` 是刻意留着的——
+它很小（一个用例通常几 KB），但是「别人 clone 下来就能零 token 复跑」的前提。
+
+## 并行跑多个用例
+
+同一个库可以同时跑多路，但**每路必须有自己的浏览器 profile 目录**——Chromium 对
+`user-data-dir` 加单实例锁，两路共用一个目录时后起的那路会直接崩
+（内核会把它翻成「profile 目录已被另一个浏览器占用」，底层原生报错是误导性的
+`Target page, context or browser has been closed`）。
+
+约定：profile 统一放本库 `.profiles/<用例名或 lane 名>/`，`.gitignore` 已经挡掉。
+两路共用一个 **录像缓存**（`.cache/`）是安全的，不同用例的键本来就不同。
+
+```powershell
+$env:UI_AGENT_CACHE_DIR = "<本库>\.cache"
+# 每路自带 --run-dir 与 --profile-dir，例如
+#   --run-dir   Grafana日志\outputs\grafana-jxindependentjar\20261021-180000
+#   --profile-dir .profiles\grafana-jxindependentjar
+```
+
+编排脚本是技能包里的 `ui-agent/scripts/parallel_run.py`（读一份 jobs.json 清单），
+细节见技能包 `references/parallel.md`。
 
 ## 断言纪律
 

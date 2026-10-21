@@ -1,0 +1,55 @@
+{
+  "case_id": "grafana-jxindependentjar",
+  "name": "Grafana Explore 查 jxindependentjar 日志（时间窗锁 17 点到 18 点）",
+  "url": "",
+  "steps": [
+    {
+      "goal": "点 Run query 重新执行这次查询",
+      "checks": [
+        {
+          "kind": "url_contains",
+          "value": "1792573200000",
+          "expected": "1792573200000",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        },
+        {
+          "kind": "text_contains",
+          "value": "2026-10-21 17:00:00 to 2026-10-21 18:00:00",
+          "expected": "2026-10-21 17:00:00 to 2026-10-21 18:00:00",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        }
+      ],
+      "url": "",
+      "note": ""
+    },
+    {
+      "goal": "确认日志正文里出现 jxindependentjar 的 INFO 日志",
+      "checks": [
+        {
+          "kind": "text_contains",
+          "value": "INFO jxindependentjar",
+          "expected": "INFO jxindependentjar",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        },
+        {
+          "kind": "url_contains",
+          "value": "jxindependentjar",
+          "expected": "jxindependentjar",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        }
+      ],
+      "url": "",
+      "note": ""
+    }
+  ],
+  "vars": {},
+  "notes": "入口地址不在用例里：运行时用 --url 给。入口 URL 自带 app_name 与绝对毫秒时间窗，\n所以「查的是哪个应用、查的是哪段时间」都由地址决定，参数一样地址就一样。\n1792573200000 / 1792576800000 是 2026-10-21 17:00:00 与 18:00:00（Asia/Shanghai）。"
+}

@@ -1,0 +1,15 @@
+id: grafana-jxindependentjar
+title: Grafana Explore 查 jxindependentjar 日志（时间窗锁 17 点到 18 点）
+notes: |
+  入口地址不在用例里：运行时用 --url 给。入口 URL 自带 app_name 与绝对毫秒时间窗，
+  所以「查的是哪个应用、查的是哪段时间」都由地址决定，参数一样地址就一样。
+  1792573200000 / 1792576800000 是 2026-10-21 17:00:00 与 18:00:00（Asia/Shanghai）。
+steps:
+  - goal: 点 Run query 重新执行这次查询
+    checks:
+      - url_contains: "1792573200000"
+      - text_contains: "2026-10-21 17:00:00 to 2026-10-21 18:00:00"
+  - goal: 确认日志正文里出现 jxindependentjar 的 INFO 日志
+    checks:
+      - text_contains: "INFO jxindependentjar"
+      - url_contains: "jxindependentjar"
