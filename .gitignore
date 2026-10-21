@@ -1,9 +1,6 @@
 # 运行产物：可随时重跑，不进库
 **/outputs/
 
-# 录像：体积大、和本机浏览器版本相关
-.cache/
-
 # 浏览器登录态 profile：一团 user-data-dir，几十上百 MB，且和本机绑定
 .profiles/
 
