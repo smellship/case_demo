@@ -27,7 +27,7 @@
           "expected": "发票号码",
           "role": "",
           "attr": "",
-          "timeout_ms": 0
+          "timeout_ms": 20000
         },
         {
           "kind": "element_exists",
@@ -35,7 +35,7 @@
           "expected": "开票日期",
           "role": "",
           "attr": "",
-          "timeout_ms": 0
+          "timeout_ms": 20000
         }
       ],
       "url": "/bw-main-ui/incomeAlone-ui/income/invoiceCheck",
@@ -69,14 +69,6 @@
       "checks": [
         {
           "kind": "text_contains",
-          "value": "查验结果",
-          "expected": "查验结果",
-          "role": "",
-          "attr": "",
-          "timeout_ms": 0
-        },
-        {
-          "kind": "text_contains",
           "value": "数电票（二手车销售统一发票）",
           "expected": "数电票（二手车销售统一发票）",
           "role": "",
@@ -90,6 +82,14 @@
           "role": "",
           "attr": "",
           "timeout_ms": 0
+        },
+        {
+          "kind": "element_exists",
+          "value": "打印",
+          "expected": "打印",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
         }
       ],
       "url": "",
@@ -97,5 +97,5 @@
     }
   ],
   "vars": {},
-  "notes": "入口地址不在用例里，运行时用 --url 给：\nhttp://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck\n\n本用例自带登录（干净 profile 也能跑，不依赖残留登录态）：\n账号密码用 --var 注入，另外三个字段值也要给（键名必须是控件标签的子串）：\n--var 账号=cpy001 --var 密码=Aa123456.\n--var 发票号码=25152000000023214079 --var 合计=105000.00 --var 开票日期=2025-05-07\n\n两个坑：\n1) 登录成功后停在「云控制台」，不会跳回发票查验页 —— 所以第 2 步写站点内路径重新导航。\n   步骤级 url 以 / 开头时，按 --url 的 origin 补全（换环境只改 --url，用例不用动）。\n2) 金额那格标签先叫「金额合计」，填了值就变成「价税合计」，\n   所以键必须用「合计」——它同时是两者的子串，用「金额合计」会匹配不上。\n\n页面是 wujie 微前端（主应用 bw-main-ui 套子应用 incomeAlone-ui），\n同一批 DOM 会同时出现在两个 frame 里；内核已按「主帧先扫、共用节点的帧跳过」处理。"
+  "notes": "入口地址不在用例里，运行时用 --url 给：\nhttp://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck\n\n本用例自带登录（干净 profile 也能跑，不依赖残留登录态）：\n账号密码用 --var 注入，另外三个字段值也要给（键名必须是控件标签的子串）：\n--var 账号=cpy001 --var 密码=Aa123456.\n--var 发票号码=25152000000023214079 --var 合计=105000.00 --var 开票日期=2025-05-07\n\n两个坑：\n1) 登录成功后停在「云控制台」，不会跳回发票查验页 —— 所以第 2 步写站点内路径重新导航。\n   步骤级 url 以 / 开头时，按 --url 的 origin 补全（换环境只改 --url，用例不用动）。\n2) 金额那格标签先叫「金额合计」，填了值就变成「价税合计」，\n   所以键必须用「合计」——它同时是两者的子串，用「金额合计」会匹配不上。\n\n页面是 wujie 微前端（主应用 bw-main-ui 套子应用 incomeAlone-ui），\n同一批 DOM 会同时出现在两个 frame 里；内核已按「主帧先扫、共用节点的帧跳过」处理。\n\n3) 日期框不要点开日历：日历里的日号是 DIV/SPAN，不在快照的角色白名单里，\n   一旦点开就再也选不到日期（Jev 会在这里低置信度打转）。直接对「开票日期」执行\n   TYPE_TEXT 打字即可（实测有效）。提示词已写明这条，但 Jev 低置信度时仍可能去点，\n   此时由 --supervisor agent 的 HINT 兜回来——这正是「Jev 决策、宿主在卡住时介入」的用处。\n\n第 4 步的「打印」是强断言：弹窗没开时全页 31 个元素里没有它，一出现即证明确实弹了。\n另外内核现在会在动作后预检断言：点了「查验」、弹窗盖住按钮、断言同时成立，\n就直接收尾，不再向模型要下一个决策（模型看不到弹窗这就是结果，会一直点被遮住的按钮）。"
 }

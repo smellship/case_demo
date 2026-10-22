@@ -4,9 +4,9 @@
   "case_hash": "id:invoice-check-84",
   "base_url": "http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck",
   "plan_name": "进项·发票查验 84 数电二手车",
-  "run_id": "20261022-124045",
+  "run_id": "precheck-agent",
   "created_at": "2026-10-22T12:04:13",
-  "updated_at": "2026-10-22T12:41:23",
+  "updated_at": "2026-10-22T16:08:04",
   "records": [
     {
       "step": 1,
@@ -26,7 +26,7 @@
       "title": "百望云-数字商业平台",
       "signature": "85d722d1cf0bb1a2",
       "source": "agent",
-      "at": "2026-10-22T12:40:57"
+      "at": "2026-10-22T16:07:41"
     },
     {
       "step": 1,
@@ -46,7 +46,7 @@
       "title": "百望云-数字商业平台",
       "signature": "85d722d1cf0bb1a2",
       "source": "agent",
-      "at": "2026-10-22T12:40:59"
+      "at": "2026-10-22T16:07:43"
     },
     {
       "step": 1,
@@ -66,7 +66,7 @@
       "title": "百望云-数字商业平台",
       "signature": "85d722d1cf0bb1a2",
       "source": "agent",
-      "at": "2026-10-22T12:41:01"
+      "at": "2026-10-22T16:07:45"
     },
     {
       "step": 1,
@@ -86,7 +86,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "978fc1e14cae8daa",
       "source": "agent",
-      "at": "2026-10-22T12:41:02"
+      "at": "2026-10-22T16:07:45"
     },
     {
       "step": 2,
@@ -106,7 +106,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "189f1b082beb94f9",
       "source": "agent",
-      "at": "2026-10-22T12:41:09"
+      "at": "2026-10-22T16:07:52"
     },
     {
       "step": 3,
@@ -126,7 +126,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "189f1b082beb94f9",
       "source": "agent",
-      "at": "2026-10-22T12:41:11"
+      "at": "2026-10-22T16:07:54"
     },
     {
       "step": 3,
@@ -146,7 +146,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "189f1b082beb94f9",
       "source": "agent",
-      "at": "2026-10-22T12:41:13"
+      "at": "2026-10-22T16:07:56"
     },
     {
       "step": 3,
@@ -166,7 +166,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "e1a442b8fa89c4c1",
       "source": "agent",
-      "at": "2026-10-22T12:41:15"
+      "at": "2026-10-22T16:07:58"
     },
     {
       "step": 3,
@@ -186,7 +186,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "e1a442b8fa89c4c1",
       "source": "agent",
-      "at": "2026-10-22T12:41:16"
+      "at": "2026-10-22T16:07:59"
     },
     {
       "step": 4,
@@ -206,7 +206,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "e1a442b8fa89c4c1",
       "source": "agent",
-      "at": "2026-10-22T12:41:18"
+      "at": "2026-10-22T16:08:01"
     },
     {
       "step": 4,
@@ -226,27 +226,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "e1a442b8fa89c4c1",
       "source": "agent",
-      "at": "2026-10-22T12:41:20"
-    },
-    {
-      "step": 4,
-      "variant": 1,
-      "operation": "WAIT",
-      "target_label": "",
-      "target_role": "",
-      "target_option_label": "",
-      "target_option_value": "",
-      "press_key": "",
-      "text": "",
-      "to_label": "",
-      "to_role": "",
-      "checked": null,
-      "times": 1,
-      "url": "http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck",
-      "title": "百望云-数字商业平台-PRO",
-      "signature": "e1a442b8fa89c4c1",
-      "source": "agent",
-      "at": "2026-10-22T12:41:22"
+      "at": "2026-10-22T16:08:03"
     },
     {
       "step": 4,
@@ -265,8 +245,8 @@
       "url": "http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck",
       "title": "百望云-数字商业平台-PRO",
       "signature": "a3cc22d67ba82a25",
-      "source": "agent",
-      "at": "2026-10-22T12:41:23"
+      "source": "",
+      "at": "2026-10-22T16:08:04"
     }
   ]
 }

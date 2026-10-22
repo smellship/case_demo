@@ -138,6 +138,50 @@ def _decide(payload: dict, ctx: dict) -> dict:
     return _do(questions, "DONE")
 
 
+def _supervise(payload: dict, ctx: dict) -> dict:
+    """Jev 卡住时宿主接手：只给方向，不替它执行（决策权仍在 Jev）。
+
+    实测这一页最容易卡的地方是日期框：Jev 点开日历后就找不到日期格了 ——
+    日历的日号是 DIV/SPAN，不在快照的角色白名单里，永远不会出现在元素表。
+    这里直接告诉它「别点开日历，直接往框里打字」，比任何 REPLAN 都省事。
+    """
+    stuck = payload.get("stuck") or {}
+    goal = payload.get("current_goal") or ""
+    elements = ((payload.get("state") or {}).get("elements")) or []
+    detail = str(stuck.get("detail") or "")
+
+    # 第 3 步填值卡住：日期框不要点开日历，直接 TYPE_TEXT
+    if "填入" in goal or "输入框" in goal:
+        pending = [
+            el for el in elements
+            if el.get("role") == "textbox" and not el.get("disabled")
+            and not el.get("value") and _value_for(el.get("label") or "", ctx) is not None
+            and _has(el, "TYPE_TEXT")
+        ]
+        if pending:
+            el = pending[0]
+            return {
+                "ruling": "HINT",
+                "hint": (
+                    f"「{el.get('label')}」这一格还没填。别点它去开日历/下拉，"
+                    f"直接对这个输入框执行 TYPE_TEXT，值用 --var 里给的那个。"
+                    f"日内日期格是 DIV，不在元素表里，点开就出不来了。"
+                ),
+            }
+        return {"ruling": "HINT", "hint": "三格都填好了就直接 DONE，进下一步。"}
+
+    # 第 4 步查验：查验按钮 disabled 说明日期框还没失焦
+    if "查验" in goal:
+        verify = _find(elements, "查验", role="button")
+        if verify is not None and verify.get("disabled"):
+            return {"ruling": "HINT", "hint": "查验按钮还是 disabled：先 CLICK 一下「备注」让日期框失焦，按钮才会启用。"}
+        if "查验结果" in " ".join(str(el.get("label") or "") for el in elements):
+            return {"ruling": "HINT", "hint": "查验结果弹窗已经出来了，直接 DONE。"}
+        return {"ruling": "HINT", "hint": "点「查验」按钮；如果它盖在弹窗下面，说明弹窗已经出来了，直接 DONE。"}
+
+    return {"ruling": "HINT", "hint": f"按当前步骤 goal 继续（{detail[:60]}）。"}
+
+
 def answer(ask: dict, ctx: dict) -> dict:
     kind = ask.get("kind")
     payload = ask.get("payload") or {}
@@ -150,5 +194,5 @@ def answer(ask: dict, ctx: dict) -> dict:
             raise SystemExit(f"没有 --var 能填「{label}」")
         return {"text": value}
     if kind == "supervise":
-        return {"ruling": "HINT", "hint": "按当前步骤 goal 继续。"}
+        return _supervise(payload, ctx)
     raise SystemExit(f"未知 ask kind：{kind}")

@@ -22,6 +22,15 @@ notes: |
   页面是 wujie 微前端（主应用 bw-main-ui 套子应用 incomeAlone-ui），
   同一批 DOM 会同时出现在两个 frame 里；内核已按「主帧先扫、共用节点的帧跳过」处理。
 
+  3) 日期框不要点开日历：日历里的日号是 DIV/SPAN，不在快照的角色白名单里，
+     一旦点开就再也选不到日期（Jev 会在这里低置信度打转）。直接对「开票日期」执行
+     TYPE_TEXT 打字即可（实测有效）。提示词已写明这条，但 Jev 低置信度时仍可能去点，
+     此时由 --supervisor agent 的 HINT 兜回来——这正是「Jev 决策、宿主在卡住时介入」的用处。
+
+  第 4 步的「打印」是强断言：弹窗没开时全页 31 个元素里没有它，一出现即证明确实弹了。
+  另外内核现在会在动作后预检断言：点了「查验」、弹窗盖住按钮、断言同时成立，
+  就直接收尾，不再向模型要下一个决策（模型看不到弹窗这就是结果，会一直点被遮住的按钮）。
+
 steps:
   - goal: 打开入口。若出现登录页，就用给定账号密码登录；否则已在登录态，直接进下一步
     checks:
@@ -30,9 +39,14 @@ steps:
   - goal: 回到发票查验页
     url: /bw-main-ui/incomeAlone-ui/income/invoiceCheck
     checks:
-      # 「发票查验」只是左侧菜单文本，不是可定位元素；用表单字段判断已到位
-      - element_exists: 发票号码
-      - element_exists: 开票日期
+      # 「发票查验」只是左侧菜单文本，不是可定位元素；用表单字段判断已到位。
+      # 子应用（wujie）挂载要几秒，默认 5s 的断言窗口不够，这里放宽到 20s。
+      - kind: element_exists
+        value: 发票号码
+        timeout_ms: 20000
+      - kind: element_exists
+        value: 开票日期
+        timeout_ms: 20000
   - goal: 在「发票号码」「金额合计」「开票日期」三个输入框里填入给定值
     checks:
       - element_value: 发票号码|25152000000023214079
@@ -40,6 +54,8 @@ steps:
   - goal: 点一下「备注」让日期框失焦，再点「查验」，等查验结果弹出
     checks:
       # 查验按钮在日期框失焦前是 disabled 的，所以这一步要先点别处再点查验
-      - text_contains: 查验结果
+      # 前两条是业务断言（与原始 midscene 用例一致）；
+      # 第三条是强断言：弹窗没开时全页 31 个元素里没有「打印」，它一出现就说明弹窗真的开了
       - text_contains: 数电票（二手车销售统一发票）
       - text_contains: 正常
+      - element_exists: 打印
