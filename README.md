@@ -31,6 +31,7 @@ case_demo/
 | 大肥鱼 | `bing-search-paging.yaml` | https://cn.bing.com/ | 要 | 搜索关键词并翻到第二页，验 URL 与结果文本 |
 | 百望票据 | `baiwang-bill-query.yaml` | 内网/专线地址（见 `others/`） | 要 | 登录 → 选行政区划 → 查询票据列表 |
 | 进项 | `发票查验-84数电二手车.yaml` | `http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck` | 要 | 自带登录（干净 profile 也能跑）→ 站内路径导回查验页 → 填三字段 → 失焦 → 查验，验「查验结果」与人车信息；**金额那格键必须用「合计」** |
+| 进项 | `合规查验-83数电机动车.yaml` | `http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/complianceCheck` | 要 | 同上流程换到合规查验页，结果区是页面内面板不是弹窗，5 条 `text_contains`；**失焦必须按 Tab，按 Enter 会把日期静默改成当天** |
 | 本地夹具 | `local-fixture.yaml` | `others/local_fixture.html`（`file:///`） | 不要 | 零依赖样例，装完即可跑通「录制 → 零 token 回放」 |
 
 ### Grafana日志 场景的入口地址
@@ -93,8 +94,14 @@ print(url.split("?")[0] + "?" + up.urlencode({"schemaVersion": "1",
    用 `--var 金额合计=...` 会匹配不上填值后的同一格，重跑就停在「没有匹配 --var 的字段值」。
    一律用 `--var 合计=...`——`合计` 同时是两者的子串。同一招也适用于别的会变的标签。
 
-（另：查验按钮在日期框失焦前是 `disabled`，填完直点「查验」不会成，要先点一下旁边的
-「备注」让日期框失焦。这条写进了用例最后一步的 goal，内核会把 goal 交给决策方。）
+（另：查验按钮在日期框失焦前是 `disabled`，填完直点「查验」不会成，要先让日期框失焦。这条写进了用例最后一步的 goal，内核会把 goal 交给决策方。）
+
+5. **让日期框失焦用 Tab 或点别的真实控件，千万别按 `Enter`。** 这类日期组件把 `Enter`
+   当成「确认当前高亮日」，日期会被**静默改成当天或面板默认值**，而「查验」按钮照样转可用——
+   从结果上完全看不出错，除非断言里有值校验（`element_value: 开票日期|2025-05-05`）。
+   两条进项用例的 notes 都写了这一条，断言里也钉了日期真值。
+6. **日期框不要点开日历。** 日历日号是 `DIV`/`SPAN`，不在快照的角色白名单里，一旦点开
+   就再也选不到日期格（实测 Jev 连续 3 次 0.4 → `low_confidence` 停机）。直接 `TYPE_TEXT` 打字。
 
 一条能直接照抄的命令（**干净 profile 也能跑**）：
 
@@ -111,13 +118,18 @@ uv run --project <技能包>\kernel python <技能包>\ui-agent\scripts\host_loo
   --decider agent --supervisor off --cache on --mode debug
 ```
 
-两条容易漏的：
+四条容易漏的：
 
 - **`--policy` 必须给。** `host_loop.py` 默认是内置 `fixture` 策略，它只认得离线夹具，
   在真实页面上会直接 `SystemExit`。本用例的策略在 `others/` 里（`answer(ask, ctx)` 接口，
   按每步 goal 分段：登录 → 回发票查验页 → 填三格 → 失焦后点查验）。
 - **首次录制不用加 `--relearn`；改过值或流程才要。** 不加会命中上一轮留下的录像，
   看着“跑了”实际什么也没新录；录好之后零 token 回放则是 `--decider off --supervisor off`。
+- **`--decider jev` 要 Jev key。** 按技能包的层级：已有用例由 Jev 决策执行，Jev 卡住才由宿主
+  agent 监督介入；不给 key 就 `--decider agent`（宿主自己决策）。
+- **合规查验那条只是换了入口与断言**，命令照抄上面那段，改三处：`--plan-file` / `--policy` /
+  `--url` 的末段改成 `complianceCheck`，`--var` 换成
+  `发票号码=25432000000057721076 --var 合计=141400.00 --var 开票日期=2025-05-05`。
 
 ## 四条规矩
 

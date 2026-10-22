@@ -1,0 +1,69 @@
+id: compliance-check-83
+title: 进项·合规查验 83 数电机动车
+priority: P1
+tags: [进项, 合规查验]
+env: bw-test
+
+notes: |
+  入口地址不在用例里，运行时用 --url 给：
+  http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/complianceCheck
+
+  本用例自带登录（干净 profile 也能跑，不依赖残留登录态）：
+  --var 账号=cpy001 --var 密码=Aa123456.
+  --var 发票号码=25432000000057721076 --var 合计=141400.00 --var 开票日期=2025-05-05
+
+  三个坑（都是实测出来的）：
+  1) 登录成功后停在「云控制台」，不会跳回合规查验页 —— 所以第 2 步写站点内路径重新导航。
+     步骤级 url 以 / 开头时按 --url 的 origin 补全，换环境只改 --url，用例不用动。
+  2) 金额那格标签先叫「金额合计」，填了值就变成「价税合计」，
+     所以键必须用「合计」——它同时是两者的子串，用「金额合计」会匹配不上。
+  3) 「查验」按钮在日期框失焦前一直是 disabled 的。失焦用 Tab 或点别的输入框，
+     千万不要按 Enter —— 实测 Enter 会把日期重置成当天（2025-05-05 变 2026-10-22），
+     查验结果就跟着错了，而且按钮照样启用，看不出问题。
+  4) 日期框不要点日历图标：日历里的日号是 DIV/SPAN，不在快照的角色白名单里，
+     一旦点开就再也选不到日期（Jev 会在这里低置信度打转）。直接 TYPE_TEXT 打字即可。
+
+  页面是 wujie 微前端（主应用 bw-main-ui 套子应用 incomeAlone-ui），
+  同一批 DOM 会同时出现在两个 frame 里；内核已按「主帧先扫、共用节点的 frame 跳过」处理。
+
+  第 4 步的断言全部是「点查验之前全页没有、点了才出现」的合规结果条目，
+  所以它们能真正区分「查验跑成功了」和「只是停在表单页」。
+
+steps:
+  - goal: 打开入口。若出现登录页，就用给定账号密码登录；否则已在登录态，直接进下一步
+    checks:
+      # 登录页没有「云控制台」，登录后的工作台/合规查验页都有 → 用它判「已登录」
+      - text_contains: 云控制台
+  - goal: 回到合规查验页
+    url: /bw-main-ui/incomeAlone-ui/income/complianceCheck
+    checks:
+      # 「合规查验」只是左侧菜单文本，不是可定位元素；用表单字段判断已到位。
+      # 子应用（wujie）挂载要几秒，默认 5s 的断言窗口不够，这里放宽到 20s。
+      - kind: element_exists
+        value: 发票号码
+        timeout_ms: 20000
+      - kind: element_exists
+        value: 开票日期
+        timeout_ms: 20000
+  - goal: 在「发票号码」「价税合计」「开票日期」三个输入框里填入给定值
+    checks:
+      - element_value: 发票号码|25432000000057721076
+      - element_value: 开票日期|2025-05-05
+  - goal: 让日期框失焦（按 Tab 或点别的输入框，不要按 Enter、不要点日历），再点「查验」，等合规结果出现
+    checks:
+      # 这五条都是合规结果面板里的条目：点查验之前全页搜不到，点了才出现
+      - kind: text_contains
+        value: 非税局黑名单销方
+        timeout_ms: 20000
+      - kind: text_contains
+        value: 本公司购方税号
+        timeout_ms: 20000
+      - kind: text_contains
+        value: 非本企业黑名单销方
+        timeout_ms: 20000
+      - kind: text_contains
+        value: 国税局查验通过
+        timeout_ms: 20000
+      - kind: text_contains
+        value: 此发票已查验过
+        timeout_ms: 20000
