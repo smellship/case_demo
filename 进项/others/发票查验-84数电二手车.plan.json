@@ -1,0 +1,86 @@
+{
+  "case_id": "invoice-check-84",
+  "name": "进项·发票查验 84 数电二手车",
+  "url": "",
+  "steps": [
+    {
+      "goal": "打开入口。若出现登录页，就用给定账号密码登录；否则直接进入发票查验页",
+      "checks": [
+        {
+          "kind": "element_exists",
+          "value": "发票号码",
+          "expected": "发票号码",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        },
+        {
+          "kind": "element_exists",
+          "value": "开票日期",
+          "expected": "开票日期",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        }
+      ],
+      "url": "",
+      "note": ""
+    },
+    {
+      "goal": "在「发票号码」「金额合计」「开票日期」三个输入框里填入给定值",
+      "checks": [
+        {
+          "kind": "element_value",
+          "value": "发票号码",
+          "expected": "25152000000023214079",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        },
+        {
+          "kind": "element_value",
+          "value": "开票日期",
+          "expected": "2025-05-07",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        }
+      ],
+      "url": "",
+      "note": ""
+    },
+    {
+      "goal": "点一下「备注」让日期框失焦，再点「查验」，等查验结果弹出",
+      "checks": [
+        {
+          "kind": "text_contains",
+          "value": "查验结果",
+          "expected": "查验结果",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        },
+        {
+          "kind": "text_contains",
+          "value": "数电票（二手车销售统一发票）",
+          "expected": "数电票（二手车销售统一发票）",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        },
+        {
+          "kind": "text_contains",
+          "value": "正常",
+          "expected": "正常",
+          "role": "",
+          "attr": "",
+          "timeout_ms": 0
+        }
+      ],
+      "url": "",
+      "note": ""
+    }
+  ],
+  "vars": {},
+  "notes": "入口地址不在用例里，运行时用 --url 给：\nhttp://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck\n已登录时不需要账号密码；三个字段值用 --var 注入（键名必须是控件标签的子串）：\n--var 发票号码=25152000000023214079 --var 合计=105000.00 --var 开票日期=2025-05-07\n注意金额那格：标签先叫「金额合计」，填了值就变成「价税合计」，\n所以键必须用「合计」——它同时是两者的子串，用「金额合计」会匹配不上。\n页面是 wujie 微前端（主应用 bw-main-ui 套子应用 incomeAlone-ui），\n同一批 DOM 会同时出现在两个 frame 里；内核已按「主帧先扫、共用节点的帧跳过」处理。"
+}

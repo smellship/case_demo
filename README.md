@@ -30,6 +30,7 @@ case_demo/
 | Grafana日志 | `grafana-jxcollect-bw.yaml` | `others/url-jxcollect-bw.txt` 同上，换 `app_name` | 要 | 同上，验 `INFO jxcollect`（**注意容器名带 `-bw`，logger 名不带**） |
 | 大肥鱼 | `bing-search-paging.yaml` | https://cn.bing.com/ | 要 | 搜索关键词并翻到第二页，验 URL 与结果文本 |
 | 百望票据 | `baiwang-bill-query.yaml` | 内网/专线地址（见 `others/`） | 要 | 登录 → 选行政区划 → 查询票据列表 |
+| 进项 | `发票查验-84数电二手车.yaml` | `http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck` | 要 | 填三个字段 → 失焦 → 查验，验弹出「查验结果」与人车信息；**金额那格键必须用「合计」** |
 | 本地夹具 | `local-fixture.yaml` | `others/local_fixture.html`（`file:///`） | 不要 | 零依赖样例，装完即可跑通「录制 → 零 token 回放」 |
 
 ### Grafana日志 场景的入口地址
@@ -68,6 +69,33 @@ print(url.split("?")[0] + "?" + up.urlencode({"schemaVersion": "1",
 
 本地夹具那份 HTML 在 `本地夹具/others/local_fixture.html`，和技能包 `kernel/examples/local_fixture.html` 是同一份，
 放一份到这里是为了让本仓库**自己就能跑通一条完整链路**，不依赖技能包里的文件。
+
+### 进项 场景的 `--var` 键名
+
+百望云的进项/影像页面是 **wujie 微前端**（`bw-main-ui` 主应用套 `incomeAlone-ui` 子应用），
+同一批 DOM 会同时出现在两个 frame 里。内核已按「主帧先扫、共用节点的帧跳过」处理，不用管，
+但写 `--var` 时要记住三条：
+
+1. **键名必须是控件标签的子串**（内核 `llm/textfill.py` 的 `match_var` 就是这么匹配的），
+   而不是「字段名对字段名」。所以不要给 `账号`/`密码`——页已登录，那两键永远匹配不上任何控件。
+2. **发票查验页的金额那一格，标签会变**：空着叫「金额合计」，填了值就叫「价税合计」。
+   用 `--var 金额合计=...` 会匹配不上填值后的同一格，重跑就停在「没有匹配 --var 的字段值」。
+   一律用 `--var 合计=...`——`合计` 同时是两者的子串。同一招也适用于别的会变的标签。
+3. **查验按钮在日期框失焦前是 `disabled`**。填完直点「查验」不会成，要先点一下旁边的
+   「备注」让日期框失焦。这条写进了用例第 3 步的 goal（内核会把 goal 交给决策方）。
+
+一条能直接照拄的命令（已登录的 profile）：
+
+```powershell
+$env:UI_AGENT_CACHE_DIR = "$PWD\.cache"
+uv run --project <技能包>\kernel python <技能包>\ui-agent\scripts\host_loop.py `
+  --run-dir "进项\outputs\发票查验-84数电二手车\$(Get-Date -Format yyyyMMdd-HHmmss)" `
+  --profile-dir .profiles\进项 `
+  --plan-file "进项\others\发票查验-84数电二手车.plan.json" `
+  --url "http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck" `
+  --var 发票号码=25152000000023214079 --var 合计=105000.00 --var 开票日期=2025-05-07 `
+  --decider agent --supervisor off --cache on --relearn --mode debug
+```
 
 ## 四条规矩
 
