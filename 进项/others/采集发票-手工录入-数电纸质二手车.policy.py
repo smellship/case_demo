@@ -146,13 +146,28 @@ def _decide(payload: dict) -> dict:
                     return _do(questions, "TYPE_TEXT", key)
         return _do(questions, "DONE")
 
-    # 保存
+    # 清掉刚采集的那一行：HOVER「更多」把「删除」展开，再 CLICK 删除。
+    # 列表本来就空（这张票之前采过、保存被拒）时直接完成。
+    if "清掉" in goal or "删除" in goal:
+        delete = _find(questions, "删除")
+        if delete:
+            return _do(questions, "CLICK", delete)
+        more = _find(questions, "更多")
+        if more:
+            return _do(questions, "HOVER", more)
+        if "暂无数据" in text:
+            return _do(questions, "DONE")
+        return _do(questions, "WAIT")
+
+    # 保存：命中编号就说明这一票已经被受理（列表出行，或提示已采集过），别再点第二次。
+    # 注意输入框里的值不进 page.text，所以号码出现在页面上只可能是结果，不是还没填。
     if "保存" in goal:
+        number = VALUE_OF["发票号码"]
+        if number in text or "重复采集" in text:
+            return _do(questions, "DONE")
         save = _find(questions, "保存", "button") or _find(questions, "保存")
         if save:
             return _do(questions, "CLICK", save)
-        if "暂无数据" not in text:
-            return _do(questions, "DONE")
         return _do(questions, "WAIT")
 
     return _do(questions, "DONE")
@@ -166,6 +181,8 @@ def _supervise(payload: dict, ctx: dict) -> dict:
         hint = "直接 TYPE_TEXT 到空着的输入框；日期也可以直接打字，不要点开日历。"
     elif "保存" in goal:
         hint = "点「保存」按钮；若页面停在表单上，先确认发票类型不是「请选择」。"
+    elif "清掉" in goal or "删除" in goal:
+        hint = "行内「更多」要 HOVER 才会展开，展开后再 CLICK「删除」；没有这一行就直接完成。"
     else:
         hint = "按当前 goal 继续。"
     return {"ruling": "HINT", "hint": hint}
