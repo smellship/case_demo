@@ -4,9 +4,9 @@
   "case_hash": "id:manual-entry-used-car",
   "base_url": "http://10.100.3.2/bw-main-ui/pictureProAlone-ui/picturePro/myNoteAdd",
   "plan_name": "影像·采集发票 手工录入 数电纸质发票（二手车销售统一发票）",
-  "run_id": "run-record4",
+  "run_id": "run-record2",
   "created_at": "2026-10-23T10:58:28",
-  "updated_at": "2026-10-23T13:30:00",
+  "updated_at": "2026-10-23T14:24:21",
   "records": [
     {
       "step": 1,
@@ -22,11 +22,11 @@
       "to_role": "",
       "checked": null,
       "times": 1,
-      "url": "http://10.100.3.2/personalUserCenter-ui/userLogin?redirectUrl=http%3A%2F%2F10.100.3.2%2Fbw-main-ui%2FpictureProAlone-ui%2FpicturePro%2FmyNoteAdd",
+      "url": "http://10.100.3.2/personalUserCenter-ui/userLogin",
       "title": "百望云-数字商业平台",
       "signature": "85d722d1cf0bb1a2",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:28:31"
+      "at": "2026-10-23T14:21:56"
     },
     {
       "step": 1,
@@ -42,11 +42,11 @@
       "to_role": "",
       "checked": null,
       "times": 1,
-      "url": "http://10.100.3.2/personalUserCenter-ui/userLogin?redirectUrl=http%3A%2F%2F10.100.3.2%2Fbw-main-ui%2FpictureProAlone-ui%2FpicturePro%2FmyNoteAdd",
+      "url": "http://10.100.3.2/personalUserCenter-ui/userLogin",
       "title": "百望云-数字商业平台",
       "signature": "85d722d1cf0bb1a2",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:28:34"
+      "at": "2026-10-23T14:21:58"
     },
     {
       "step": 1,
@@ -62,11 +62,11 @@
       "to_role": "",
       "checked": null,
       "times": 1,
-      "url": "http://10.100.3.2/personalUserCenter-ui/userLogin?redirectUrl=http%3A%2F%2F10.100.3.2%2Fbw-main-ui%2FpictureProAlone-ui%2FpicturePro%2FmyNoteAdd",
+      "url": "http://10.100.3.2/personalUserCenter-ui/userLogin",
       "title": "百望云-数字商业平台",
       "signature": "85d722d1cf0bb1a2",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:28:36"
+      "at": "2026-10-23T14:22:01"
     },
     {
       "step": 1,
@@ -82,11 +82,11 @@
       "to_role": "",
       "checked": null,
       "times": 1,
-      "url": "http://10.100.3.2/bw-main-ui/pictureProAlone-ui/picturePro/myNoteAdd?t=100d27674b2e10acf0bf2388d1429ee43e88eadf206d2317e44050a1c04dc437&ut=B",
+      "url": "http://10.100.3.2/bw-main-ui/consoleAlone-ui/commonCloudConsole",
       "title": "百望云-发票数字化全生命周期管理云平台",
-      "signature": "fcc21f8affb4e5b3",
+      "signature": "256b7a55f97613d6",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:28:38"
+      "at": "2026-10-23T14:22:02"
     },
     {
       "step": 2,
@@ -106,27 +106,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:28:48"
-    },
-    {
-      "step": 2,
-      "variant": 1,
-      "operation": "CLICK",
-      "target_label": "重置",
-      "target_role": "button",
-      "target_option_label": "",
-      "target_option_value": "",
-      "press_key": "",
-      "text": "",
-      "to_label": "",
-      "to_role": "",
-      "checked": null,
-      "times": 1,
-      "url": "http://10.100.3.2/bw-main-ui/pictureProAlone-ui/picturePro/myNoteAdd",
-      "title": "百望云-数字商业平台-PRO",
-      "signature": "ff868f46a349d44a",
-      "source": "jev-1.14.0",
-      "at": "2026-10-23T13:28:51"
+      "at": "2026-10-23T14:22:12"
     },
     {
       "step": 2,
@@ -146,7 +126,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:28:52"
+      "at": "2026-10-23T14:22:14"
     },
     {
       "step": 3,
@@ -166,7 +146,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:28:55"
+      "at": "2026-10-23T14:22:16"
     },
     {
       "step": 3,
@@ -184,9 +164,9 @@
       "times": 1,
       "url": "http://10.100.3.2/bw-main-ui/pictureProAlone-ui/picturePro/myNoteAdd",
       "title": "百望云-数字商业平台-PRO",
-      "signature": "44284b0f88987a1d",
+      "signature": "4fcb3a3a838ebf97",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:28:57"
+      "at": "2026-10-23T14:22:19"
     },
     {
       "step": 3,
@@ -206,7 +186,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "",
-      "at": "2026-10-23T13:28:58"
+      "at": "2026-10-23T14:22:20"
     },
     {
       "step": 4,
@@ -226,7 +206,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:00"
+      "at": "2026-10-23T14:22:23"
     },
     {
       "step": 4,
@@ -246,7 +226,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:03"
+      "at": "2026-10-23T14:22:25"
     },
     {
       "step": 4,
@@ -266,7 +246,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:05"
+      "at": "2026-10-23T14:22:28"
     },
     {
       "step": 4,
@@ -286,7 +266,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:08"
+      "at": "2026-10-23T14:22:30"
     },
     {
       "step": 4,
@@ -306,7 +286,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "",
-      "at": "2026-10-23T13:29:08"
+      "at": "2026-10-23T14:22:31"
     },
     {
       "step": 5,
@@ -326,7 +306,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:11"
+      "at": "2026-10-23T14:22:34"
     },
     {
       "step": 5,
@@ -344,9 +324,9 @@
       "times": 1,
       "url": "http://10.100.3.2/bw-main-ui/pictureProAlone-ui/picturePro/myNoteAdd",
       "title": "百望云-数字商业平台-PRO",
-      "signature": "44284b0f88987a1d",
+      "signature": "4fcb3a3a838ebf97",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:43"
+      "at": "2026-10-23T14:22:36"
     },
     {
       "step": 5,
@@ -366,7 +346,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "",
-      "at": "2026-10-23T13:29:44"
+      "at": "2026-10-23T14:22:37"
     },
     {
       "step": 6,
@@ -386,7 +366,27 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:46"
+      "at": "2026-10-23T14:22:39"
+    },
+    {
+      "step": 6,
+      "variant": 1,
+      "operation": "CLICK",
+      "target_label": "不含税金额",
+      "target_role": "textbox",
+      "target_option_label": "",
+      "target_option_value": "",
+      "press_key": "",
+      "text": "",
+      "to_label": "",
+      "to_role": "",
+      "checked": null,
+      "times": 1,
+      "url": "http://10.100.3.2/bw-main-ui/pictureProAlone-ui/picturePro/myNoteAdd",
+      "title": "百望云-数字商业平台-PRO",
+      "signature": "b550fa3f3e7cca59",
+      "source": "jev-1.14.0",
+      "at": "2026-10-23T14:22:42"
     },
     {
       "step": 6,
@@ -406,27 +406,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:49"
-    },
-    {
-      "step": 6,
-      "variant": 1,
-      "operation": "PRESS_KEY",
-      "target_label": "",
-      "target_role": "",
-      "target_option_label": "",
-      "target_option_value": "",
-      "press_key": "Escape",
-      "text": "",
-      "to_label": "",
-      "to_role": "",
-      "checked": null,
-      "times": 1,
-      "url": "http://10.100.3.2/bw-main-ui/pictureProAlone-ui/picturePro/myNoteAdd",
-      "title": "百望云-数字商业平台-PRO",
-      "signature": "ff868f46a349d44a",
-      "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:53"
+      "at": "2026-10-23T14:23:12"
     },
     {
       "step": 6,
@@ -446,7 +426,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:56"
+      "at": "2026-10-23T14:23:15"
     },
     {
       "step": 6,
@@ -466,7 +446,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "",
-      "at": "2026-10-23T13:29:56"
+      "at": "2026-10-23T14:23:15"
     },
     {
       "step": 7,
@@ -486,7 +466,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:29:59"
+      "at": "2026-10-23T14:24:19"
     },
     {
       "step": 7,
@@ -506,7 +486,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "",
-      "at": "2026-10-23T13:29:59"
+      "at": "2026-10-23T14:24:19"
     },
     {
       "step": 8,
@@ -526,7 +506,7 @@
       "title": "百望云-数字商业平台-PRO",
       "signature": "ff868f46a349d44a",
       "source": "jev-1.14.0",
-      "at": "2026-10-23T13:30:00"
+      "at": "2026-10-23T14:24:21"
     }
   ]
 }
