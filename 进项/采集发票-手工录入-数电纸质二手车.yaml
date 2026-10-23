@@ -1,0 +1,50 @@
+id: manual-entry-used-car
+title: 影像·采集发票 手工录入 数电纸质发票（二手车销售统一发票）
+priority: P1
+tags: [影像, 采集发票, 手工录入]
+env: bw-test
+notes: |
+  用户给的 Playwright+midscene 脚本翻成内核用例（references/porting.md）。
+
+  四个坑（全部实测）：
+  1. 入口是 wujie 应用：登录后停在云控制台不回跳，第 2 步用步骤级站内路径导回来。
+  2. 「发票类型」是自绘下拉（div.b-select，无 role），要 CLICK 开、再 CLICK 选项；
+     选项在可滚动弹层里，内核点前会 scrollIntoView，不用管。
+  3. **填完「发票代码」会把「发票类型」清回「请选择」**，所以必须在填完代码/号码之后
+     再选一次类型，否则保存时页面报「发票类型不能为空」。这也是本用例把「选类型」拆成
+     第 3、5 两步的原因。
+  4. 「不含税金额」是必填（用户原脚本没填），不填保存必被拦。
+  5. 第 7 步刻意**只断言号码出现在页面上**，不断言「详情」按钮：
+     这张票第一次保存成功时列表里会有这一行（详情/绿页查看出现）；
+     第二次以后保存会被站点拒绝，页面提示「该发票【…】已被…采集，请勿重复采集！」——
+     号码同样在页面上。两种结果都算「保存动作确实被执行且被站点受理过」，
+     用例因此可以反复跑，零 token 回放才不会因为「票已采过」而挂。
+     注意行内「更多」下拉在横向溢出列（x≈3209 > 视口 1920），内核快照只收视口内元素，
+     所以原脚本末尾的删除动作当前无法表达，见 references 里的能力边界。
+steps:
+  - goal: 打开入口。若出现登录页，就用给定账号密码登录；否则已在登录态，直接进下一步
+    checks:
+      - text_contains: 云控制台
+  - goal: 回到手工录入页
+    url: /bw-main-ui/pictureProAlone-ui/picturePro/myNoteAdd
+    checks:
+      - element_exists: 发票代码
+      - element_exists: 保存
+  - goal: 在「发票类型」下拉里选「增值税专用发票」
+    checks:
+      - element_value: 发票类型|增值税专用发票
+  - goal: 在「发票代码」「发票号码」两个输入框里填入给定值
+    checks:
+      - element_value: 发票代码|3200184130
+      - element_value: 发票号码|70747171
+  - goal: 填完代码后发票类型被清空了，重新在「发票类型」下拉里选「增值税专用发票」
+    checks:
+      - element_value: 发票类型|增值税专用发票
+  - goal: 在「不含税金额」「开票日期」两个输入框里填入给定值；日期填完按 Escape 关掉日历
+    checks:
+      - element_value: 不含税金额|92920.35
+      - element_value: 开票日期|2025-05-07
+  - goal: 点「保存」，确认这张票被站点受理（出现行，或提示已采集过）
+    checks:
+      - text_contains: 70747171
+      - element_value: 发票号码|70747171
