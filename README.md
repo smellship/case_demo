@@ -138,7 +138,11 @@ uv run --project <技能包>\kernel python <技能包>\ui-agent\scripts\host_loo
   `supervise` 直接给 `{"ruling": ..., "hint": ...}`；目标候选表按操作分头放在
   `click_target` / `type_text_target` 里（**没有** `target_element` 这个键），且同一个索引
   会同时出现在多张表里，必须按要执行的操作取表，不能合并。
-  三种模式的日志与逐步骤截图见 `进项/outputs/采集发票-手工录入-数电纸质二手车/report-3modes.html`。
+  三种模式的日志与逐步骤截图见 `进项/outputs/采集发票-手工录入-数电纸质二手车/report-3modes.html`
+  （`outputs/` 被 `.gitignore` 挡着、不入库，**报告是本地产物**，换机器要重跑一遍再生成）。
+  生成器是临时脚本，思路很简单：读三份 `trace.jsonl` / `result.json` 拼一张表，
+  再按 `steps/<NN>-*/screenshots/*.png` 取每步**最后一张**截图（首张是动作前的状态）——
+  把截图一起拷进 HTML 旁边的 `-assets/` 目录，报告就能单独分发。
 
 ## 四条规矩
 
