@@ -32,6 +32,7 @@ case_demo/
 | 百望票据 | `baiwang-bill-query.yaml` | 内网/专线地址（见 `others/`） | 要 | 登录 → 选行政区划 → 查询票据列表 |
 | 进项 | `发票查验-84数电二手车.yaml` | `http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/invoiceCheck` | 要 | 自带登录（干净 profile 也能跑）→ 站内路径导回查验页 → 填三字段 → 失焦 → 查验，验「查验结果」与人车信息；**金额那格键必须用「合计」** |
 | 进项 | `合规查验-83数电机动车.yaml` | `http://10.100.3.2/bw-main-ui/incomeAlone-ui/income/complianceCheck` | 要 | 同上流程换到合规查验页，结果区是页面内面板不是弹窗，5 条 `text_contains`；**失焦必须按 Tab，按 Enter 会把日期静默改成当天** |
+| 进项 | `采集发票-手工录入-数电纸质二手车.yaml` | `http://10.100.3.2/bw-main-ui/pictureProAlone-ui/picturePro/myNoteAdd` | 要 | 7 步：登录 → 回站内页 → 选发票类型（自绘下拉）→ 填代码号码 → 确认类型没被清空 → 填金额日期 → 保存。第 7 步只断言号码出现在页面上，**首采与「已采集过」两种结果都算过**，所以能反复跑 |
 | 本地夹具 | `local-fixture.yaml` | `others/local_fixture.html`（`file:///`） | 不要 | 零依赖样例，装完即可跑通「录制 → 零 token 回放」 |
 
 ### Grafana日志 场景的入口地址
@@ -130,6 +131,14 @@ uv run --project <技能包>\kernel python <技能包>\ui-agent\scripts\host_loo
 - **合规查验那条只是换了入口与断言**，命令照抄上面那段，改三处：`--plan-file` / `--policy` /
   `--url` 的末段改成 `complianceCheck`，`--var` 换成
   `发票号码=25432000000057721076 --var 合计=141400.00 --var 开票日期=2025-05-05`。
+- **同一份 policy 文件能当决策者，也能当监督者**（手工录入那条就是这么跑的）：
+  `--decider jev --supervisor agent` 是录制，`--decider off --supervisor off` 是零 token 回放，
+  `--decider agent --supervisor agent` 是宿主全权决策。写 policy 时注意两个信封不同——
+  `decide` 的答复要包一层 `{"answers": {...}}`（内核 `AgentEngine` 只认这个），
+  `supervise` 直接给 `{"ruling": ..., "hint": ...}`；目标候选表按操作分头放在
+  `click_target` / `type_text_target` 里（**没有** `target_element` 这个键），且同一个索引
+  会同时出现在多张表里，必须按要执行的操作取表，不能合并。
+  三种模式的日志与逐步骤截图见 `进项/outputs/采集发票-手工录入-数电纸质二手车/report-3modes.html`。
 
 ## 四条规矩
 
